@@ -19,7 +19,7 @@
 SCRIPT_PATH=$(cd `dirname $0`; pwd)
 HUDI_DEMO_ENV=$1
 WS_ROOT=`dirname $SCRIPT_PATH`
-COMPOSE_FILE_NAME="docker-compose.yml"
+COMPOSE_FILE_NAME="docker-compose_hadoop284_hive233_spark244.yml"
 if [ "$HUDI_DEMO_ENV" = "--mac-aarch64" ]; then
   COMPOSE_FILE_NAME="docker-compose_hadoop284_hive233_spark244_mac_aarch64.yml"
 fi
@@ -33,5 +33,5 @@ sleep 5
 HUDI_WS=${WS_ROOT} docker-compose -f ${SCRIPT_PATH}/${COMPOSE_FILE_NAME} up -d
 sleep 15
 
-docker exec -it adhoc-1 /bin/bash /var/hoodie/ws/docker/demo/setup_demo_container.sh
-docker exec -it adhoc-2 /bin/bash /var/hoodie/ws/docker/demo/setup_demo_container.sh
+#docker exec -it adhoc-1 /bin/bash /var/hoodie/ws/docker/demo/setup_demo_container.sh
+#docker exec -it adhoc-2 /bin/bash /var/hoodie/ws/docker/demo/setup_demo_container.sh
