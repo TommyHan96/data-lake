@@ -3,50 +3,60 @@ package com.realtime;
 import com.realtime.constant.KafkaConstConfig;
 import com.realtime.constant.MysqlConstConfig;
 import com.realtime.function.CustomerDeserialization;
+import com.realtime.function.OverridingTopicSchema;
+import com.realtime.utils.KafkaManager;
 import com.ververica.cdc.connectors.mysql.MySqlSource;
 import com.ververica.cdc.connectors.mysql.table.StartupOptions;
 import com.ververica.cdc.debezium.DebeziumSourceFunction;
-import org.apache.flink.api.common.serialization.SimpleStringSchema;
 import org.apache.flink.streaming.api.datastream.DataStreamSource;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 import java.util.Properties;
 
 public class DataSync {
 
-  public static void main(String[] args) throws Exception {
-    //
+    private static final Logger logger = LogManager.getLogger(DataSync.class);
 
-    StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+    public static void main(String[] args) throws Exception {
 
-    env.setParallelism(10);
-    DebeziumSourceFunction<String> sourceFunction =
-        MySqlSource.<String>builder()
-            .hostname(MysqlConstConfig.HOST)
-            .port(MysqlConstConfig.PORT)
-            .databaseList(MysqlConstConfig.DATABASE) // 数据库名
-            .username(MysqlConstConfig.USER)
-            .password(MysqlConstConfig.PASSWORD)
-            .startupOptions(StartupOptions.latest())
-            .deserializer(new CustomerDeserialization())
-            .build();
+        StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 
-    DataStreamSource<String> mysqlStream = env.addSource(sourceFunction);
-    mysqlStream.print();
+        env.setParallelism(1);
 
-    env.enableCheckpointing(3000);
-    Properties properties = new Properties();
-    properties.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, KafkaConstConfig.BROKERS);
-    properties.setProperty("transaction.timeout.ms", "720000");
+        DebeziumSourceFunction<String> sourceFunction =
+                MySqlSource.<String>builder()
+                        .hostname(MysqlConstConfig.HOST)
+                        .port(MysqlConstConfig.PORT)
+                        .databaseList(MysqlConstConfig.DATABASE)
+                        .username(MysqlConstConfig.USER)
+                        .password(MysqlConstConfig.PASSWORD)
+                        .startupOptions(StartupOptions.latest())
+                        .deserializer(new CustomerDeserialization())
+                        .build();
 
-    FlinkKafkaProducer<String> kafkaProducer =
-        new FlinkKafkaProducer<>(
-            KafkaConstConfig.BROKERS, KafkaConstConfig.TOPIC, new SimpleStringSchema());
+        DataStreamSource<String> mysqlStream = env.addSource(sourceFunction);
 
-    mysqlStream.addSink(kafkaProducer);
+        env.enableCheckpointing(3000);
 
-    env.execute();
-  }
+
+        Properties properties = new Properties();
+        properties.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, KafkaConstConfig.BROKERS);
+        properties.put("transaction.timeout.ms", "720000");
+        properties.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+        properties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.ByteArraySerializer");
+
+
+        KafkaManager kafkaManager = new KafkaManager(properties);
+        FlinkKafkaProducer<String> kafkaSink = kafkaManager.createDynamicFlinkProducer(KafkaConstConfig.BROKERS, new OverridingTopicSchema());
+
+
+        mysqlStream.addSink(kafkaSink);
+        mysqlStream.print();
+        env.execute();
+    }
+
 }

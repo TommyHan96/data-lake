@@ -3,7 +3,7 @@ package com.realtime.constant;
 public class MysqlConstConfig {
 
   public static final String HOST = "localhost";
-  public static final Integer PORT = 3306;
+  public static final Integer PORT = 33060;
   public static final String DATABASE = "datawarehouse";
   public static final String USER = "root";
   public static final String PASSWORD = "123456";

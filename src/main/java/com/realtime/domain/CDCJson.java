@@ -6,6 +6,6 @@ import lombok.Data;
 public class CDCJson {
   private Operation op;
   private CDCSource source;
-  private CDCFieldValue before;
-  private CDCFieldValue after;
+  private Object before;
+  private Object after;
 }
