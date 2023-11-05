@@ -4,7 +4,7 @@ import com.realtime.constant.KafkaConstConfig;
 import com.realtime.constant.MysqlConstConfig;
 import com.realtime.function.CustomerDeserialization;
 import com.realtime.function.OverridingTopicSchema;
-import com.realtime.utils.KafkaManager;
+import com.realtime.utils.FlinkKafkaManager;
 import com.ververica.cdc.connectors.mysql.MySqlSource;
 import com.ververica.cdc.connectors.mysql.table.StartupOptions;
 import com.ververica.cdc.debezium.DebeziumSourceFunction;
@@ -50,7 +50,7 @@ public class DataSync {
         properties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.ByteArraySerializer");
 
 
-        KafkaManager kafkaManager = new KafkaManager(properties);
+        FlinkKafkaManager kafkaManager = new FlinkKafkaManager(properties);
         FlinkKafkaProducer<String> kafkaSink = kafkaManager.createDynamicFlinkProducer(KafkaConstConfig.BROKERS, new OverridingTopicSchema());
 
 
