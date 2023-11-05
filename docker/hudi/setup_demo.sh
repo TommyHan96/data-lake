@@ -33,5 +33,5 @@ sleep 5
 HUDI_WS=${WS_ROOT} docker-compose -f ${SCRIPT_PATH}/${COMPOSE_FILE_NAME} up -d
 sleep 15
 
-#docker exec -it adhoc-1 /bin/bash /var/hoodie/ws/docker/demo/setup_demo_container.sh
-#docker exec -it adhoc-2 /bin/bash /var/hoodie/ws/docker/demo/setup_demo_container.sh
+sh ./sh/init_mysql.sh
+sh ./sh/init_kafka.sh
