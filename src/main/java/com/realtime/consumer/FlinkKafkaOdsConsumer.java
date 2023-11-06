@@ -26,7 +26,7 @@ public class FlinkKafkaOdsConsumer {
     // consumer
     FlinkKafkaConsumer consumer =
         new FlinkKafkaConsumer(
-            KafkaConstConfig.TOPIC, new SimpleStringSchema(), properties);
+            KafkaConstConfig.DEFAULT_TOPIC, new SimpleStringSchema(), properties);
 
     // checkpoint
     env.enableCheckpointing(5000);
