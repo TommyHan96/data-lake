@@ -7,7 +7,7 @@ import java.util.Properties;
 public class RealtimeProperties {
     public Properties getProperties() throws IOException {
         InputStream resource = this.getClass().getResourceAsStream("app.properties");
-        java.util.Properties properties = new java.util.Properties();
+        Properties properties = new Properties();
         properties.load(resource);
         return properties;
     }
