@@ -18,7 +18,7 @@ public class FlinkKafkaOdsConsumer {
     StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
     // set properties
     Properties properties = new Properties();
-    properties.setProperty(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, ConstString.BROKERS);
+    properties.setProperty(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, ConstString.KAFKA_BROKERS);
     properties.setProperty("group.id", "flink-ods-trans");
     properties.setProperty("enable.auto.commit", "true");
     properties.setProperty("auto.commit.interval.ms", "2000");

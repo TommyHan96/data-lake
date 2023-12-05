@@ -21,11 +21,11 @@ import static org.apache.kafka.clients.producer.ProducerConfig.ACKS_CONFIG;
 
 public class FlinkKafkaManager {
     private static final Logger logger = LogManager.getLogger(FlinkKafkaManager.class);
-    private Properties properties;
+    private final Properties properties;
 
-    private AdminClient ac;
+    private final AdminClient ac;
 
-    private ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
 
     public FlinkKafkaManager(Properties properties) {
@@ -38,7 +38,7 @@ public class FlinkKafkaManager {
         try {
             return ac.listTopics().names().get().contains(topic);
         } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
+            logger.warn(e.getMessage());
             return false;
         }
     }
@@ -68,7 +68,7 @@ public class FlinkKafkaManager {
      *
      * @param brokers
      * @param kafkaSerializationSchema
-     * @return
+     * @return FlinkKafkaProducer<String>
      */
     public FlinkKafkaProducer<String> createDynamicFlinkProducer(String brokers, KafkaSerializationSchema<String> kafkaSerializationSchema) {
         if (StringUtils.isEmpty(brokers)) {
@@ -76,7 +76,7 @@ public class FlinkKafkaManager {
         }
 
         this.properties.put(ACKS_CONFIG, "all");
-        return new FlinkKafkaProducer<String>(DEFAULT_TOPIC, kafkaSerializationSchema, this.properties, FlinkKafkaProducer.Semantic.EXACTLY_ONCE);
+        return new FlinkKafkaProducer<>(DEFAULT_TOPIC, kafkaSerializationSchema, this.properties, FlinkKafkaProducer.Semantic.EXACTLY_ONCE);
     }
 
 
@@ -98,7 +98,7 @@ public class FlinkKafkaManager {
     /**
      * {"op":"c","before":{},"source":{"database":"datawarehouse","table":" "},"after":{"bu_name":"广告部","second_department_name":"开发部","third_department_name":"开发部","code":52,"first_department_code":70,"level":"5","second_department_code":64,"bg_code":51358,"bu_code":50046,"bg_name":"销售部","all_parent_department_name":"事业部","is_valid":0,"name":"产品部","first_department_name":"广告部","id":44,"third_department_code":959}}
      *
-     * @return
+     * @return CDCJson
      */
     @SneakyThrows
     public CDCJson parseSchema(String str) {
