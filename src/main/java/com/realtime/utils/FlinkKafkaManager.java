@@ -12,15 +12,12 @@ import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.codehaus.jackson.map.ObjectMapper;
-
-import java.io.IOException;
 import java.util.Collections;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
-
-import static com.realtime.constant.KafkaConstConfig.DEFAULT_TOPIC;
-import static org.apache.flink.kafka.shaded.org.apache.kafka.clients.producer.ProducerConfig.ACKS_CONFIG;
+import static com.realtime.constant.ConstString.DEFAULT_TOPIC;
+import static org.apache.kafka.clients.producer.ProducerConfig.ACKS_CONFIG;
 
 public class FlinkKafkaManager {
     private static final Logger logger = LogManager.getLogger(FlinkKafkaManager.class);

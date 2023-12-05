@@ -1,6 +1,6 @@
 package com.realtime.consumer;
 
-import com.realtime.constant.KafkaConstConfig;
+import com.realtime.constant.ConstString;
 import com.realtime.utils.KafkaSchemaParser;
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.common.serialization.SimpleStringSchema;
@@ -18,7 +18,7 @@ public class FlinkKafkaOdsConsumer {
     StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
     // set properties
     Properties properties = new Properties();
-    properties.setProperty(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, KafkaConstConfig.BROKERS);
+    properties.setProperty(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, ConstString.BROKERS);
     properties.setProperty("group.id", "flink-ods-trans");
     properties.setProperty("enable.auto.commit", "true");
     properties.setProperty("auto.commit.interval.ms", "2000");
@@ -26,7 +26,7 @@ public class FlinkKafkaOdsConsumer {
     // consumer
     FlinkKafkaConsumer consumer =
         new FlinkKafkaConsumer(
-            KafkaConstConfig.DEFAULT_TOPIC, new SimpleStringSchema(), properties);
+            ConstString.DEFAULT_TOPIC, new SimpleStringSchema(), properties);
 
     // checkpoint
     env.enableCheckpointing(5000);
